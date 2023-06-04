@@ -3,6 +3,7 @@ import HelloWorld from './api/HelloWorld'
 import RateLimiting from './handlers/RateLimiter'
 import { errorHandler } from './error/ErrorHandler'
 import SessionHandler from './handlers/SessionHandler'
+import RedisClientWrapper from './redis/RedisClient'
 
 const app = express()
 const port = 3000
@@ -17,7 +18,7 @@ declare global {
     }
 }
 
-RateLimiting.initializer().then(() => {
+RedisClientWrapper.initializer().then(() => {
 
     app.all('*', SessionHandler.provideSession);
 
@@ -25,7 +26,7 @@ RateLimiting.initializer().then(() => {
         errorHandler.handleError(err, res);
     });
     
-    app.use('/api', RateLimiting.rateLimiter);
+    app.use('/api', RateLimiting.rateLimiter());
     
     app.get('/api', async (request: Request, response: Response) => {
         response.send(await HelloWorld.index());
