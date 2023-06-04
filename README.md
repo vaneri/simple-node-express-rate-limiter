@@ -14,6 +14,9 @@ Commands to run after pulling the repository
 `npm start` 
 
 
+Usage of the nodemon for automatic restart/compilation
+`nodemon dist/src/index.j`
+
 
 ## redis docker image
 `docker pull redis`
