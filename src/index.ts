@@ -1,20 +1,39 @@
 import express, { NextFunction, Request, Response } from 'express'
 import HelloWorld from './api/HelloWorld'
-import RateLimiting from './midleware/RateLimiter'
+import RateLimiting from './handlers/RateLimiter'
 import { errorHandler } from './error/ErrorHandler'
+import SessionHandler from './handlers/SessionHandler'
 
 const app = express()
 const port = 3000
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    errorHandler.handleError(err, res);
-});
+//
+// this is extending the Request object globally
+declare global {
+    namespace Express {
+        export interface Request {
+            user?: string;
+        }
+    }
+}
 
-app.get('/api', RateLimiting.rateLimiterApi, async (request: Request, response: Response) => {
-    response.send(await HelloWorld.index());
-});
+RateLimiting.initializer().then(() => {
 
-app.listen(port, () => {
-    console.log(`Rate limiting app listening on port ${port}`)
+    app.all('*', SessionHandler.provideSession);
+
+    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+        errorHandler.handleError(err, res);
+    });
+    
+    app.use('/api', RateLimiting.rateLimiter);
+    
+    app.get('/api', async (request: Request, response: Response) => {
+        response.send(await HelloWorld.index());
+    });
+    
+    app.listen(port, () => {
+        console.log(`Rate limiting app listening on port ${port}`)
+    });
+
 });
 
