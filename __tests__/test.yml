@@ -1,8 +1,8 @@
 config:
   target: "http://localhost:3000/api"
   phases:
-    - duration: 15
-      arrivalRate: 10
+    - duration: 2
+      arrivalRate: 50
 
 scenarios:
   - flow:
