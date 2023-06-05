@@ -1,4 +1,4 @@
-# simple-node-rate-limiter
+# simple-node-express-rate-limiter
 
 Usage of a rate limiter backup with a redis cache
 
